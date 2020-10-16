@@ -1,11 +1,49 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, ActivityIndicator, Dimensions } from 'react-native';
+import MapView from 'react-native-maps';
+import * as Location from 'expo-location';
 
 export default function App() {
+  const [loading, setLoading] = useState(true);
+  const[errorMsg, setErrorMsg] = useState(null);
+  const [coordinates, setCoordinates] = useState({
+    latitude: -22.2102703,
+    longitude: -45.2630555
+  })
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+      }
+      let geoDados = await Location.getCurrentPositionAsync({})
+      let latitude = geoDados.coords.latitude;
+      let longitude = geoDados.coords.longitude;
+      let latLong = {latitude: latitude, longitude: longitude};
+      setCoordinates(latLong);
+      console.log(latitude);
+      setLoading(false)
+    }) ();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      {loading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <MapView
+          initialRegion={{
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude,
+            latitudeDelta: 0.0068,
+            longitudeDelta: 0.0068,
+          }}
+          style={styles.mapStyle}
+        />
+      )}
+      <ActivityIndicator size="large" />
       <StatusBar style="auto" />
     </View>
   );
@@ -17,5 +55,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  mapStyle: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
 });
