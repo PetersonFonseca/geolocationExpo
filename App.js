@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ActivityIndicator, Dimensions } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 export default function App() {
@@ -33,6 +33,7 @@ export default function App() {
       {loading ? (
         <ActivityIndicator size="large" />
       ) : (
+        <>
         <MapView
           initialRegion={{
             latitude: coordinates.latitude,
@@ -41,9 +42,12 @@ export default function App() {
             longitudeDelta: 0.0068,
           }}
           style={styles.mapStyle}
-        />
+        >
+          <Marker coordinate={coordinates} title={'Meu local'} />
+        </MapView>
+        
+        </>
       )}
-      <ActivityIndicator size="large" />
       <StatusBar style="auto" />
     </View>
   );
