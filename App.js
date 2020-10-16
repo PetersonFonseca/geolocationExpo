@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ActivityIndicator, Dimensions } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
+import api from './services/Api';
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -10,7 +11,8 @@ export default function App() {
   const [coordinates, setCoordinates] = useState({
     latitude: -22.2102703,
     longitude: -45.2630555
-  })
+  });
+  const [point, setPoints] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -24,6 +26,13 @@ export default function App() {
       let latLong = {latitude: latitude, longitude: longitude};
       setCoordinates(latLong);
       console.log(latitude);
+
+      api.get('points').then((response) => {
+        const points = response.data.data;
+        setPoints(points);
+      });
+
+
       setLoading(false)
     }) ();
   }, []);
